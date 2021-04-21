@@ -1,0 +1,4 @@
+*.o
+generate_graph
+generate_graph.exe
+metis-5.1.0
