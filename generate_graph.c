@@ -44,9 +44,10 @@ int generate_graph(group** grp){
     int avg_in_group_edge_weight = 2;
     int avg_out_group_edge_weight = 6;
 
+    int max_group_size = 30;
     //create groups
-    sbrk(num_groups*sizeof(group) + num_groups*avg_group_size*sizeof(vertex) +
-     num_groups*avg_group_size*avg_group_size*sizeof(edge));
+    sbrk(num_groups*sizeof(group) + num_groups*max_group_size*sizeof(vertex) +
+     num_groups*max_group_size*max_group_size*sizeof(edge));
     *grp = malloc(num_groups*sizeof(group));
     group* groups = (*grp);
 
@@ -173,6 +174,7 @@ int generate_graph(group** grp){
 }
 
 int convert_to_csr(group* G, idx_t** adjncy, idx_t** xadj, idx_t** adjwgt){
+    sbrk(2*num_edges*sizeof(idx_t) + (G[num_groups-1].size + group_root)*sizeof(idx_t));
     *adjncy = malloc(num_edges*sizeof(idx_t));
     *adjwgt = malloc(num_edges*sizeof(idx_t));
     *xadj = malloc((G[num_groups-1].size + group_root)*sizeof(idx_t));
