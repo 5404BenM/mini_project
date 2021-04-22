@@ -203,9 +203,11 @@ int convert_to_csr(group* G, idx_t** adjncy, idx_t** xadj, idx_t** adjwgt){
 }
 
 int main(){
-    group** graph;
+    group** graph = malloc(sizeof(group*));
     generate_graph(graph);
-    idx_t **adjncy, **xadj, **adjwgt;
+    idx_t **adjncy = malloc(sizeof(idx_t*));
+    idx_t **xadj = malloc(sizeof(idx_t*));
+    idx_t **adjwgt = malloc(sizeof(idx_t*));
     convert_to_csr(*graph, adjncy, xadj, adjwgt);
     printf("%d %d %d %d %d", xadj[0], xadj[1], xadj[2], xadj[3], xadj[4]);
 }
