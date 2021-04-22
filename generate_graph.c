@@ -1,6 +1,7 @@
 //Author: Benjamin Medoff
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "./metis-5.1.0/include/metis.h"
 
 typedef struct edg{
@@ -44,6 +45,8 @@ int generate_graph(group** grp){
     int avg_out_group_edge_weight = 6;
 
     //create groups
+    sbrk(num_groups*sizeof(group) + num_groups*avg_group_size*sizeof(vertex) +
+     num_groups*avg_group_size*avg_group_size*sizeof(edge));
     *grp = malloc(num_groups*sizeof(group));
     group* groups = (*grp);
 
