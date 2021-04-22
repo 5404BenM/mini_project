@@ -1,11 +1,11 @@
 CC=gcc
-CFLAGS=
+CFLAGS= -std=c99 -g
 generate_graph: generate_graph.o
-	$(CC) -o generate_graph generate_graph.o
+	$(CC) $(CFLAGS) -o generate_graph generate_graph.o
 	#rm *.o
 
 debug: generate_graph.o
-	$(CC) -g -o generate_graph generate_graph.o
+	$(CC) $(CFLAGS) -o generate_graph generate_graph.o
 	#rm *.o
 
 clean:
