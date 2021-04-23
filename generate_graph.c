@@ -44,7 +44,7 @@ int generate_graph(group** grp){
     int avg_in_group_edge_weight = 2;
     int avg_out_group_edge_weight = 6;
 
-    int max_group_size = 30;
+    int max_group_size = avg_group_size + 13;//from line 58
     //create groups
     sbrk(num_groups*sizeof(group) + num_groups*max_group_size*sizeof(vertex) +
      num_groups*max_group_size*max_group_size*sizeof(edge));
@@ -78,45 +78,44 @@ int generate_graph(group** grp){
                 groups[i].verts[j].in_edges[k].vert_id = group_root + k;
                 groups[i].verts[j].in_edges[k].weight = avg_in_group_edge_weight + ((rand()%3)-1);
             }
-            for(int k = j; k < groups[i].size; k++){
-                groups[i].verts[j].in_edges[k].vert_id = group_root + k;
-                groups[i].verts[j].in_edges[k].weight = avg_in_group_edge_weight + ((rand()%3)-1);
+            for(int k = j+1; k < groups[i].size; k++){
+                groups[i].verts[j].in_edges[k-1].vert_id = group_root + k;
+                groups[i].verts[j].in_edges[k-1].weight = avg_in_group_edge_weight + ((rand()%3)-1);
             }
-
-            group_root = group_root + groups[i].size;
         }
+        group_root = group_root + groups[i].size;
     }
 
     //add interconnects
     for(int i = 0; i < num_groups; i++){
         for(int j = 0; j < avg_interconnects + ((rand()%3)-1); j++){
             num_edges++;
-            vertex vert = groups[i].verts[rand()%groups[i].size];
+            vertex* vert = &groups[i].verts[rand()%groups[i].size];
             int other_group = (i+1+(rand()%(num_groups-1)))%num_groups;
             int add_index = rand()%groups[other_group].size;
 
-            if(vert.out_edges == NULL){
-                vert.out_edges = malloc(sizeof(edge));
+            if(vert->out_edges == NULL){
+                vert->out_edges = malloc(sizeof(edge));
 
-                if(vert.out_edges == NULL)
+                if(vert->out_edges == NULL)
                     breakHere();
                 
-                vert.out_size = 1;
+                vert->out_size = 1;
 
-                vert.out_edges[0].vert_id = groups[other_group].verts[add_index].id;
-                vert.out_edges[0].weight = avg_out_group_edge_weight + ((rand()%5)-2);
+                vert->out_edges[0].vert_id = groups[other_group].verts[add_index].id;
+                vert->out_edges[0].weight = avg_out_group_edge_weight + ((rand()%5)-2);
             }
             else{
-                edge* temp = malloc((vert.out_size+1)*sizeof(edge));
+                edge* temp = malloc((vert->out_size+1)*sizeof(edge));
                 
                 if(temp == NULL)
                     breakHere();
 
                 int adding_vert_id = groups[other_group].verts[add_index].id;
 
-                for(int k = 0; k < vert.out_size; k++){
-                    temp[k].vert_id = vert.out_edges[k].vert_id;
-                    temp[k].weight = vert.out_edges[k].weight;
+                for(int k = 0; k < vert->out_size; k++){
+                    temp[k].vert_id = vert->out_edges[k].vert_id;
+                    temp[k].weight = vert->out_edges[k].weight;
 
                     if(adding_vert_id == temp[k].vert_id){
                         add_index = (add_index +1)%groups[other_group].size;
@@ -124,50 +123,50 @@ int generate_graph(group** grp){
                     }
                 }
 
-                temp[vert.out_size].vert_id = adding_vert_id;
-                temp[vert.out_size].weight = avg_out_group_edge_weight + ((rand()%5)-2);
+                temp[vert->out_size].vert_id = adding_vert_id;
+                temp[vert->out_size].weight = avg_out_group_edge_weight + ((rand()%5)-2);
 
-                free(vert.out_edges);
-                vert.out_edges = temp;
+                free(vert->out_edges);
+                vert->out_edges = temp;
             }
 
             //add the edge to the other vertex.
-            vertex vert2 = groups[other_group].verts[add_index];
-            if(vert2.out_edges == NULL){
-                vert2.out_edges = malloc(sizeof(edge));
+            vertex* vert2 = &groups[other_group].verts[add_index];
+            if(vert2->out_edges == NULL){
+                vert2->out_edges = malloc(sizeof(edge));
 
-                if(vert2.out_edges == NULL)
+                if(vert2->out_edges == NULL)
                     breakHere();
                 
-                vert2.out_size = 1;
+                vert2->out_size = 1;
 
-                vert2.out_edges[0].vert_id = vert.id;
-                vert2.out_edges[0].weight = avg_out_group_edge_weight + ((rand()%5)-2);
+                vert2->out_edges[0].vert_id = vert->id;
+                vert2->out_edges[0].weight = avg_out_group_edge_weight + ((rand()%5)-2);
             }
             else{
-                edge* temp = malloc((vert2.out_size+1)*sizeof(edge));
+                edge* temp = malloc((vert2->out_size+1)*sizeof(edge));
 
                 if(temp == NULL)
                     breakHere();
 
-                int adding_vert_id = vert2.id;
+                int adding_vert_id = vert2->id;
 
-                for(int k = 0; k < vert2.out_size; k++){
-                    temp[k].vert_id = vert2.out_edges[k].vert_id;
-                    temp[k].weight = vert2.out_edges[k].weight;
+                for(int k = 0; k < vert2->out_size; k++){
+                    temp[k].vert_id = vert2->out_edges[k].vert_id;
+                    temp[k].weight = vert2->out_edges[k].weight;
 
                     if(adding_vert_id == temp[k].vert_id){
                         add_index = (add_index +1)%groups[other_group].size;
                         //fuck
-                        adding_vert_id = (vert.id+1);
+                        adding_vert_id = (vert->id+1);
                     }
                 }
 
-                temp[vert2.out_size].vert_id = adding_vert_id;
-                temp[vert2.out_size].weight = avg_out_group_edge_weight + ((rand()%5)-2);
+                temp[vert2->out_size].vert_id = adding_vert_id;
+                temp[vert2->out_size].weight = avg_out_group_edge_weight + ((rand()%5)-2);
 
-                free(vert2.out_edges);
-                vert2.out_edges = temp;
+                free(vert2->out_edges);
+                vert2->out_edges = temp;
             }
         }
     }
@@ -214,5 +213,5 @@ int main(){
     idx_t **xadj = malloc(sizeof(idx_t*));
     idx_t **adjwgt = malloc(sizeof(idx_t*));
     convert_to_csr(*graph, adjncy, xadj, adjwgt);
-    printf("%d %d %d %d %d", xadj[0], xadj[1], xadj[2], xadj[3], xadj[4]);
+    printf("%d %d %d %d %d\n", (*xadj)[0], (*xadj)[1], (*xadj)[2], (*xadj)[3], (*xadj)[4]);
 }
