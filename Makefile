@@ -1,15 +1,14 @@
 CC=gcc
 CFLAGS= -std=c99 -g
-generate_graph: generate_graph.o
-	$(CC) $(CFLAGS) -o generate_graph generate_graph.o
-	#rm *.o
+metis_test: metis_test.o generate_graph.o
+	$(CC) $(CFLAGS) -o metis_test metis_test.o generate_graph.o /usr/local/lib/libmetis.a
+	rm *.o
 
-debug: generate_graph.o
-	$(CC) $(CFLAGS) -o generate_graph generate_graph.o
-	#rm *.o
+debug: metis_test.o
+	$(CC) $(CFLAGS) -o metis_test metis_test.o /usr/local/lib/libmetis.a
+	rm *.o
 
 clean:
 	rm *.o
-	rm generate_graph
-	rm generate_graph.exe
+	rm metis_test
 
